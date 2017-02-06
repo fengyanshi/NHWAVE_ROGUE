@@ -3,6 +3,6 @@
 *.o
 *.f90
 *.mod
-mytvd
+nhwave
 *~
 *.*~
