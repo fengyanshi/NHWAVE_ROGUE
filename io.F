@@ -25,9 +25,10 @@ SUBROUTINE READ_INPUT
     INTEGER :: itmp1,itmp2,itmp3,itmp4,itmp5
      character(len=80) :: FILE_NAME,TMP_NAME
      real(SP) :: Segma,Celerity,Wave_Length,Wave_Number,  &
-                 Fk,Fkdif,Theta_Calc,Wnumy,tmp,tmp1,DFreq, &
-                 Freq_Peak,gam,sa,sb,SumInt,A_Jon
-     integer :: line,ierr,Iter,i,j,k
+                 Fk,Fkdif,Theta_Calc,Wnumy,tmp,DFreq, &
+                 Freq_Peak,gam,sa,sb,SumInt,A_Jon,Angle,ddir, &
+                 tmp1,tmp2,tmp3,tmp4
+     integer :: line,ierr,Iter,i,j,k,ndir,nfreq,nk
  
      ! log and error file
      open(3,file='log.txt')
@@ -657,6 +658,138 @@ SUBROUTINE READ_INPUT
        enddo
      ENDIF
 
+! fyshi move pre-calculation of wave parameters
+     if(WaveMaker(1:7)=='INT_SPC') then
+
+          ALLOCATE(Celerity2D(NumFreq),Sigma2D(NumFreq))
+          ALLOCATE(WnumY2D(NumDir,NumFreq),Amp_Wave2D(NumDir,NumFreq))
+ 
+           do nfreq = 1,NumFreq
+           do ndir = 1,NumDir
+             Per_Wave = 1.0/Freq(nfreq)
+             Segma = 2.0*pi/Per_Wave
+             Sigma2D(nfreq)=Segma
+             Celerity = sqrt(Grav*Dep_Wave)
+             Wave_Length = Celerity*Per_Wave
+             Wave_Number = 2.0*pi/Wave_Length
+       
+             Iter = 0
+   175        Fk = Grav*Wave_Number*tanh(Wave_Number*Dep_Wave)-Segma**2
+             if(abs(Fk)<=1.0e-8.or.Iter>1000) goto 185
+             Fkdif = Grav*Wave_Number*Dep_Wave*(1.0-tanh(Wave_Number*Dep_Wave)**2)+  & 
+               Grav*tanh(Wave_Number*Dep_Wave)
+             Wave_Number = Wave_Number-Fk/Fkdif
+             Iter = Iter+1
+             goto 175
+   185        continue
+             Wave_Length = 2.0*pi/Wave_Number
+             Celerity2D(nfreq) = Wave_Length/Per_Wave
+
+             ! adjust wave direction for periodic bc
+             Angle = Dire(ndir)*pi/180.
+             if(Angle>zero) then
+               tmp3 = zero
+               tmp1 = Wave_Number
+               nk = 0
+               do while (tmp3<Angle)
+                 nk = nk+1
+                 tmp2 = nk*2.0*pi/(Nglob*dy)
+                 if(tmp2>=tmp1) then
+                   tmp3 = 0.5*pi-small
+                 else
+                   tmp3 = asin(tmp2/tmp1)
+                 endif
+               enddo
+
+               ! judge between nk-1 and nk which is closer                                          
+               tmp4 = asin((nk-1)*2.0*pi/(Nglob*dy)/tmp1)
+               if(abs(tmp4-Angle)<abs(Angle-tmp3)) then
+                 Angle = tmp4
+               else
+                 Angle = tmp3
+               endif
+             else
+               tmp3 = zero
+               tmp1 = Wave_Number
+               nk = 0
+               do while (tmp3>Angle)
+                 nk = nk+1
+                tmp2 = nk*2.0*pi/(Nglob*dy)
+                 if(tmp2>=tmp1) then
+                   tmp3 = -0.5*pi+small
+                 else
+                   tmp3 = -asin(tmp2/tmp1)
+                 endif
+               enddo
+
+               ! judge between nk-1 and nk which is closer     
+               ! there is a bug in the old code, should be negative 02/06/2017 fyshi                                     
+               tmp4= -asin((nk-1)*2.0*pi/(Nglob*dy)/tmp1)
+               if(abs(tmp4-Angle)<abs(Angle-tmp3)) then
+                 Angle = tmp4
+               else
+                 Angle = tmp3
+               endif
+             endif
+
+# if defined (PARALLEL)
+         if(myid.eq.0) then
+           write(3,'(A20,F12.3)') 'Wave angle you set= ',Dire(ndir)       
+           write(3,'(A28,F12.3)') 'Wave angle for periodic bc= ',Angle*180/pi
+         endif
+# else
+         write(3,'(A20,F12.3)') 'Wave angle you set= ',Dire(ndir)                                                      
+         write(3,'(A28,F12.3)') 'Wave angle for periodic bc= ',Angle*180/pi
+# endif
+
+
+!             WnumX = Wave_Number*cos(Angle)
+             WnumY2D(ndir,nfreq) = Wave_Number*sin(Angle)
+
+             ! calculate root-mean-squre wave height for each component
+            IF (NumFreq .LE. 1) THEN
+               dfreq = 1.0
+            ELSE 
+             if(nfreq==1) then
+               dfreq = Freq(2)-Freq(1)
+             elseif(nfreq==NumFreq) then
+               dfreq = Freq(NumFreq)-Freq(NumFreq-1)
+             else
+               dfreq = 0.5*(Freq(nfreq+1)-Freq(nfreq-1))
+             endif
+             dfreq = abs(dfreq)
+            ENDIF
+
+            IF (NumDir .LE. 1)THEN
+             ddir = 1.0
+            ELSE
+             if(ndir==1) then
+               ddir = Dire(2)-Dire(1)
+             elseif(ndir==NumDir) then
+               ddir = Dire(NumDir)-Dire(NumDir-1)
+             else
+               ddir = 0.5*(Dire(ndir+1)-Dire(ndir-1))
+             endif
+             ddir = abs(ddir)
+            ENDIF
+         
+             Amp_Wave2D(ndir,nfreq) = 2.0*sqrt(2.0*Wave_Spc2d(ndir,nfreq)*ddir*dfreq)
+
+!             print*,ndir,nfreq
+!             print*,ddir,dfreq
+!             print*,'amp',Amp_Wave2D(ndir,nfreq)
+!             print*,'wk',WnumY2D(ndir,nfreq)
+!             print*,'c',Celerity2D(nfreq)
+!             print*,'sigma',Sigma2D(nfreq)
+           enddo
+           enddo
+
+!          stop
+      
+
+         endif  ! end if int_spc
+
+! end move
      ! JONSWAP spectrum
      if(WaveMaker(5:7)=='JON') then
        CALL GET_Float_VAL(Hm0,FILE_NAME,'Hm0',line)
