@@ -120,6 +120,14 @@
                  Xsource_West,Xsource_East,Ysource_Suth,Ysource_Nrth
      real(SP), dimension(3) :: ALPHA,BETA
 
+! 2d spectral wavemaker
+
+
+     REAL(SP),DIMENSION(:),ALLOCATABLE ::Celerity2D,Sigma2D
+
+     REAL(SP),DIMENSION(:,:),ALLOCATABLE :: WnumY2D,Amp_Wave2D
+
+
 ! fyshi added time series boundary condition 12/17/2011
        CHARACTER(LEN=80) :: BoundaryFile,WHAT
        INTEGER :: NumTimeData
