@@ -637,10 +637,8 @@ SUBROUTINE READ_INPUT
          read(14,*) Dire(i)
        enddo
 !     wave_spc2d is wave height or 2*amp
-       do j = 1,NumFreq
-       do i = 1,NumDir
-         read(14,*) Wave_Spc2d(i,j)
-       enddo
+       do j = 1,NumDir
+         read(14,*) (Wave_Spc2d(i,j),i=1,NumFreq)
        enddo
        close(14)
 
