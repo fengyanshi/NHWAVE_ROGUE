@@ -3844,7 +3844,8 @@
        do i = Ibeg,Iend
          if(xc(i)>=Xsource_West.and.xc(i)<=Xsource_East.and. &
             yc(j)>=Ysource_Suth.and.yc(j)<=Ysource_Nrth) then
-           Phs_lag = (j-Jbeg)*dy*WnumY
+!           Phs_lag = (j-Jbeg)*dy*WnumY
+           Phs_lag = yc(j)*WnumY
            SourceC(i,j) = Celerity*Amp_Wave/Source_Area*cos(pi/2-Segma*time+Phs_lag)
          endif
        enddo
@@ -3874,7 +3875,10 @@
            DO nfreq = 1,NumFreq
            DO ndir = 1,NumDir         
 
-             Phs_lag = (dy/2.0+(j-Jbeg)*dy)*WnumY2D(ndir,nfreq)
+!             bug here, should use global yc 02/07/2017 fyshi
+!             Phs_lag = (dy/2.0+(j-Jbeg)*dy)*WnumY2D(ndir,nfreq)
+
+             Phs_lag = yc(j)*WnumY2D(ndir,nfreq)
              SourceC(i,j) = SourceC(i,j)+Celerity2D(nfreq)  &
                   *Amp_Wave2D(ndir,nfreq)/Source_Area*  &
                   cos(pi/2-Sigma2D(nfreq)*time+Phs_lag+Random_Phs(ndir,nfreq)) 
