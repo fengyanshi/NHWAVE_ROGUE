@@ -611,28 +611,10 @@ SUBROUTINE READ_INPUT
      IF(WaveMaker(5:7)=='SPC') then
        open(14,file='spc2d.txt')
        read(14,*) NumFreq,NumDir
-       if(NumFreq>MaxNumFreq) then
-# if defined (PARALLEL)
-         if(myid.eq.0) then
-           write(3,'(A)') 'Please set a larger MaxNumFreq in mod_glob.F'
-           stop
-         endif
-# else
-         write(3,'(A)') 'Please set a larger MaxNumFreq in mod_glob.F'
-         stop
-# endif
-       endif
-       if(NumDir>MaxNumDir) then
-# if defined (PARALLEL)
-         if(myid.eq.0) then
-           write(3,'(A)') 'Please set a larger MaxNumDir in mod_glob.F'
-           stop
-         endif
-# else
-         write(3,'(A)') 'Please set a larger MaxNumDir in mod_glob.F'
-         stop
-# endif
-       endif
+       ALLOCATE(Freq(NumFreq),  &
+                Dire(NumDir),Wave_Spc2d(NumDir,NumFreq),&
+                Random_Phs(NumDir,NumFreq))
+
        do i = 1,NumFreq
          read(14,*) Freq(i)
        enddo
@@ -743,37 +725,39 @@ SUBROUTINE READ_INPUT
 # endif
 
 
-!             WnumX = Wave_Number*cos(Angle)
              WnumY2D(ndir,nfreq) = Wave_Number*sin(Angle)
 
-             ! calculate root-mean-squre wave height for each component
-            IF (NumFreq .LE. 1) THEN
-               dfreq = 1.0
-            ELSE 
-             if(nfreq==1) then
-               dfreq = Freq(2)-Freq(1)
-             elseif(nfreq==NumFreq) then
-               dfreq = Freq(NumFreq)-Freq(NumFreq-1)
-             else
-               dfreq = 0.5*(Freq(nfreq+1)-Freq(nfreq-1))
-             endif
-             dfreq = abs(dfreq)
-            ENDIF
+             Amp_Wave2D(ndir,nfreq) = Wave_Spc2d(ndir,nfreq)
 
-            IF (NumDir .LE. 1)THEN
-             ddir = 1.0
-            ELSE
-             if(ndir==1) then
-               ddir = Dire(2)-Dire(1)
-             elseif(ndir==NumDir) then
-               ddir = Dire(NumDir)-Dire(NumDir-1)
-             else
-               ddir = 0.5*(Dire(ndir+1)-Dire(ndir-1))
-             endif
-             ddir = abs(ddir)
-            ENDIF
-         
-             Amp_Wave2D(ndir,nfreq) = 2.0*sqrt(2.0*Wave_Spc2d(ndir,nfreq)*ddir*dfreq)
+! we change to amplitude rather than energy
+!  I left the following conversion in case somebody want to use energy type
+!             ! calculate root-mean-squre wave height for each component
+!            IF (NumFreq .LE. 1) THEN
+!               dfreq = 1.0
+!            ELSE 
+!             if(nfreq==1) then
+!               dfreq = Freq(2)-Freq(1)
+!             elseif(nfreq==NumFreq) then
+!               dfreq = Freq(NumFreq)-Freq(NumFreq-1)
+!             else
+!               dfreq = 0.5*(Freq(nfreq+1)-Freq(nfreq-1))
+!             endif
+!             dfreq = abs(dfreq)
+!            ENDIF
+!
+!            IF (NumDir .LE. 1)THEN
+!             ddir = 1.0
+!            ELSE
+!             if(ndir==1) then
+!               ddir = Dire(2)-Dire(1)
+!             elseif(ndir==NumDir) then
+!               ddir = Dire(NumDir)-Dire(NumDir-1)
+!             else
+!               ddir = 0.5*(Dire(ndir+1)-Dire(ndir-1))
+!             endif
+!             ddir = abs(ddir)
+!            ENDIF
+!             Amp_Wave2D(ndir,nfreq) = 2.0*sqrt(2.0*Wave_Spc2d(ndir,nfreq)*ddir*dfreq)
 
 !             print*,ndir,nfreq
 !             print*,ddir,dfreq
@@ -781,17 +765,20 @@ SUBROUTINE READ_INPUT
 !             print*,'wk',WnumY2D(ndir,nfreq)
 !             print*,'c',Celerity2D(nfreq)
 !             print*,'sigma',Sigma2D(nfreq)
-           enddo
-           enddo
 
-!          stop
-      
+           enddo
+           enddo
 
          endif  ! end if int_spc
 
 ! end move
      ! JONSWAP spectrum
      if(WaveMaker(5:7)=='JON') then
+
+      ALLOCATE(Freq(MaxNumFreq),  &
+                Dire(MaxNumDir),Wave_Spc2d(MaxNumDir,MaxNumFreq),&
+                Random_Phs(MaxNumDir,MaxNumFreq))
+
        CALL GET_Float_VAL(Hm0,FILE_NAME,'Hm0',line)
        CALL GET_Float_VAL(Tp,FILE_NAME,'Tp',line)
        CALL GET_Float_VAL(Freq_Min,FILE_NAME,'Freq_Min',line)
