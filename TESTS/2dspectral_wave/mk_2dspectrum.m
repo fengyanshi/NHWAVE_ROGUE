@@ -108,6 +108,8 @@ Amp_input=Amp_input';
 
 PeakPeriod = 1.0/PeakFreq;
 
+Ht_input=2.0*Amp_input;
+
 fname='wave2d.txt';
 
 % write data
@@ -117,7 +119,7 @@ fprintf(fid,'%5i %5i   - NumFreq NumDir \n',length(Freq_model),length(Dire_model
 % funwave
 fprintf(fid,'%10.3f   - Freq \n',Freq_model');
 fprintf(fid,'%10.3f   - Dire \n',Dire_model');
-dlmwrite(fname,Amp_input,'delimiter','\t','-append','precision',5);
+dlmwrite(fname,Ht_input,'delimiter','\t','-append','precision',5);
 
 fclose(fid)
 
