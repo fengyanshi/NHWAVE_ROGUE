@@ -111,9 +111,11 @@
                  Wave_Ave_Start,Wave_Ave_End,Schmidt,TRamp,Grd_R, &
                  Yield_Stress,Plastic_Visc, &
                  Mud_Visc,Water_Depth
-     real(SP) :: Amp_Wave,Per_Wave,Dep_Wave,Theta_Wave,Freq(MaxNumFreq),  &
-                Dire(MaxNumDir),Wave_Spc2d(MaxNumDir,MaxNumFreq), &
-                 Random_Phs(MaxNumDir,MaxNumFreq),Hm0,Tp,Freq_Min,  &
+     REAL(SP),DIMENSION(:),ALLOCATABLE :: Freq,  Dire
+     REAL(SP),DIMENSION(:,:),ALLOCATABLE ::Wave_Spc2d,Random_Phs
+                
+     real(SP) :: Amp_Wave,Per_Wave,Dep_Wave,Theta_Wave,  &
+                 Hm0,Tp,Freq_Min,  &
                 Freq_Max,Jon_Spc(MaxNumFreq),RanPhs(MaxNumFreq)
      real(SP) :: Sponge_West_Width,Sponge_East_Width,Sponge_South_Width,  &
                 Sponge_North_Width,R_Sponge,A_Sponge, &
