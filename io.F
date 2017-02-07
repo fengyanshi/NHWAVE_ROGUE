@@ -609,7 +609,22 @@ SUBROUTINE READ_INPUT
 
      ! random wave, read in 2d spectrum
      IF(WaveMaker(5:7)=='SPC') then
-       open(14,file='spc2d.txt')
+
+       CALL GET_STRING_VAL(Spc2D_File,FILE_NAME,'Spc2D_File',line,ierr)
+       IF(ierr == 1) THEN
+
+# if defined (PARALLEL)
+         if(myid.eq.0) then
+           write(3,'(A50)') 'Spc2D_File not specified, use default: spc2d.txt'        
+         endif
+# else
+           write(3,'(A50)') 'Spc2D_File not specified, use default: spc2d.txt'
+# endif
+
+         Spc2D_File = 'spc2d.txt'
+       ENDIF
+
+       open(14,file=TRIM(Spc2D_File),status='old')
        read(14,*) NumFreq,NumDir
        ALLOCATE(Freq(NumFreq),  &
                 Dire(NumDir),Wave_Spc2d(NumDir,NumFreq),&

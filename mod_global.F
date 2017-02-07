@@ -124,6 +124,7 @@
 
 ! 2d spectral wavemaker
 
+       CHARACTER(LEN=80) :: Spc2D_File
 
      REAL(SP),DIMENSION(:),ALLOCATABLE ::Celerity2D,Sigma2D
 
