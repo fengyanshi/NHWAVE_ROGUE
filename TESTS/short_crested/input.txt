@@ -5,8 +5,8 @@
 TITLE = TEST_RUN
 
 ! ---------------- RESULT_FOLDER-------------------------------
-!RESULT_FOLDER = /Users/fengyanshi15/tmp2/
-RESULT_FOLDER = ../result_mark/
+RESULT_FOLDER = /Users/fengyanshi15/tmp2/
+!RESULT_FOLDER = ../result_mark/
 ! ----------------------BATHYMETRY---------------------------
 ! if analytical bathymetry
 DEPTH_TYPE = CELL_CENTER
@@ -20,7 +20,7 @@ Kglob = 6
 
 ! --------------------PROCESSOR NUMBER-------------------------
 ! processors in x and y direction (for parallel run)
-PX = 32
+PX = 2
 PY = 2
 
 ! -----------------------TIME----------------------------------
