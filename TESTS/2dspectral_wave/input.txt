@@ -5,23 +5,22 @@
 TITLE = TEST_RUN
 
 ! ---------------- RESULT_FOLDER-------------------------------
-!RESULT_FOLDER = /Users/fengyanshi15/tmp2/
-RESULT_FOLDER = ../result_mark/
+RESULT_FOLDER = output/
 ! ----------------------BATHYMETRY---------------------------
 ! if analytical bathymetry
 DEPTH_TYPE = CELL_CENTER
 ANA_BATHY  = F
-DEPTH_FILE = wave_flume.txt
+DEPTH_FILE = depth.txt
 ! --------------------DIMENSION---------------------------------
 ! cell numbers
-Mglob = 1024
-Nglob = 128
+Mglob = 1152
+Nglob = 1024
 Kglob = 6
 
 ! --------------------PROCESSOR NUMBER-------------------------
 ! processors in x and y direction (for parallel run)
-PX = 32
-PY = 2
+PX = 36
+PY = 32
 
 ! -----------------------TIME----------------------------------
 ! time: total computational time/ plot time / screen interval 
@@ -34,8 +33,8 @@ SCREEN_INTV = 1.0
 
 ! ------------------------GRID----------------------------------
 ! grid sizes
-DX = 2.0
-DY = 2.0
+DX = 1.0
+DY = 1.0
 
 ! ---------------------VERTICAL GRID OPTION--------------------
 ! IVGRD = 1: uniform; 2: exponential (not avaiable)
