@@ -5,8 +5,7 @@
 TITLE = TEST_RUN
 
 ! ---------------- RESULT_FOLDER-------------------------------
-RESULT_FOLDER = /Users/fengyanshi15/tmp2/
-!RESULT_FOLDER = ../result_mark/
+RESULT_FOLDER = output/
 ! ----------------------BATHYMETRY---------------------------
 ! if analytical bathymetry
 DEPTH_TYPE = CELL_CENTER
@@ -20,14 +19,14 @@ Kglob = 6
 
 ! --------------------PROCESSOR NUMBER-------------------------
 ! processors in x and y direction (for parallel run)
-PX = 2
-PY = 2
+PX = 32
+PY = 4
 
 ! -----------------------TIME----------------------------------
 ! time: total computational time/ plot time / screen interval 
 ! all in seconds
 SIM_STEPS = 100000000
-TOTAL_TIME =500.0
+TOTAL_TIME =200.0
 PLOT_START = 0.0
 PLOT_INTV = 1.0
 SCREEN_INTV = 1.0
