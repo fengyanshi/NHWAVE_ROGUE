@@ -13,23 +13,23 @@ ANA_BATHY  = F
 DEPTH_FILE = depth.txt
 ! --------------------DIMENSION---------------------------------
 ! cell numbers
-Mglob = 17280
+Mglob = 2160
 Nglob = 3
 Kglob = 8
 
 ! --------------------PROCESSOR NUMBER-------------------------
 ! processors in x and y direction (for parallel run)
-PX = 576
+PX = 72
 PY = 1
 
 ! -----------------------TIME----------------------------------
 ! time: total computational time/ plot time / screen interval 
 ! all in seconds
 SIM_STEPS = 100000000
-TOTAL_TIME =200.0
+TOTAL_TIME =30.0
 PLOT_START = 0.0
-PLOT_INTV = 1.0
-SCREEN_INTV = 1.0
+PLOT_INTV = 0.5
+SCREEN_INTV = 0.5
 !@@ SCREEN_INTV = 1.0
 
 ! ------------------------GRID----------------------------------
@@ -176,7 +176,7 @@ Nudging = F
 ! INT_SOL - internal wavemaker for solitary wave
 ! INT_SPC - internal wavemaker for random wave
 WAVEMAKER = INT_SPC
-Spc2D_File = spc2d.txt
+Spc2D_File = wave2d.txt
 !WAVEMAKER = nothing
 AMP = 0.00000001
 PER = 1.0
@@ -186,8 +186,8 @@ THETA = 0.0
 
 ! ----------------------INTERNAL WAVEMAKER--------------------------------
 ! parameters for internal wavemaker
-Xsource_West = 2.0
-Xsource_East = 2.2
+Xsource_West = 5.0
+Xsource_East = 5.2
 Ysource_Suth = 0.0
 Ysource_Nrth = 1000000.0
 
@@ -213,7 +213,7 @@ Ysource_Nrth = 1000000.0
 !       mild: R=0.90, A=5.0
 !       very mild: R=0.95, A=5.0
 SPONGE_ON = T
-Sponge_West_Width =  1.0
+Sponge_West_Width =  3.0
 Sponge_East_Width =  1.0
 Sponge_South_Width = 0.0
 Sponge_North_Width = 0.0

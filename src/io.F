@@ -29,6 +29,7 @@ SUBROUTINE READ_INPUT
                  Freq_Peak,gam,sa,sb,SumInt,A_Jon,Angle,ddir, &
                  tmp1,tmp2,tmp3,tmp4
      integer :: line,ierr,Iter,i,j,k,ndir,nfreq,nk
+     INTEGER :: INPUT_PHASE
  
      ! log and error file
      open(3,file='log.txt')
@@ -625,6 +626,7 @@ SUBROUTINE READ_INPUT
        ENDIF
 
        open(14,file=TRIM(Spc2D_File),status='old')
+       read(14,*) INPUT_PHASE   ! 1 for input
        read(14,*) NumFreq,NumDir
        ALLOCATE(Freq(NumFreq),  &
                 Dire(NumDir),Wave_Spc2d(NumDir,NumFreq),&
@@ -636,11 +638,24 @@ SUBROUTINE READ_INPUT
        do i = 1,NumDir
          read(14,*) Dire(i)
        enddo
+
 !     wave_spc2d is wave height or 2*amp
        do j = 1,NumDir
          read(14,*) (Wave_Spc2d(j,i),i=1,NumFreq)
        enddo
+
+! phase info
+      INPUT_PHASE = 0
+      do j = 1,NumDir
+         read(14,*,end=110) (Random_Phs(i,j),j=1,NumFreq)
+       enddo
+
        close(14)
+
+109    INPUT_PHASE = 1
+110    CONTINUTE
+
+      IF (INPUT_PHASE == 0)THEN
 
        ! random phase for each component
        do j = 1,NumFreq
@@ -652,6 +667,8 @@ SUBROUTINE READ_INPUT
 # endif
        enddo
        enddo
+      ENDIF ! end input phase
+
      ENDIF
 
 ! fyshi move pre-calculation of wave parameters
