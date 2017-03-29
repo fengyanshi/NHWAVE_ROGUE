@@ -626,7 +626,7 @@ SUBROUTINE READ_INPUT
        ENDIF
 
        open(14,file=TRIM(Spc2D_File),status='old')
-       read(14,*) INPUT_PHASE   ! 1 for input
+
        read(14,*) NumFreq,NumDir
        ALLOCATE(Freq(NumFreq),  &
                 Dire(NumDir),Wave_Spc2d(NumDir,NumFreq),&
