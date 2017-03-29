@@ -13,13 +13,13 @@ ANA_BATHY  = F
 DEPTH_FILE = depth.txt
 ! --------------------DIMENSION---------------------------------
 ! cell numbers
-Mglob = 2160
+Mglob = 3600
 Nglob = 3
 Kglob = 8
 
 ! --------------------PROCESSOR NUMBER-------------------------
 ! processors in x and y direction (for parallel run)
-PX = 72
+PX = 144
 PY = 1
 
 ! -----------------------TIME----------------------------------
@@ -214,7 +214,7 @@ Ysource_Nrth = 1000000.0
 !       very mild: R=0.95, A=5.0
 SPONGE_ON = T
 Sponge_West_Width =  3.0
-Sponge_East_Width =  1.0
+Sponge_East_Width =  3.0
 Sponge_South_Width = 0.0
 Sponge_North_Width = 0.0
 R_Sponge = 0.90
