@@ -26,7 +26,7 @@ PY = 1
 ! time: total computational time/ plot time / screen interval 
 ! all in seconds
 SIM_STEPS = 100000000
-TOTAL_TIME =30.0
+TOTAL_TIME =40.0
 PLOT_START = 0.0
 PLOT_INTV = 0.5
 SCREEN_INTV = 0.5
@@ -181,7 +181,7 @@ Spc2D_File = wave2d.txt
 AMP = 0.00000001
 PER = 1.0
 !@@@@ DEP = 0.62
-DEP = 1.60
+DEP = 0.60
 THETA = 0.0
 
 ! ----------------------INTERNAL WAVEMAKER--------------------------------
