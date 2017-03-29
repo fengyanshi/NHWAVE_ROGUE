@@ -646,14 +646,14 @@ SUBROUTINE READ_INPUT
 
 ! phase info
       INPUT_PHASE = 0
-      do j = 1,NumDir
+      do i = 1,NumDir
          read(14,*,end=110) (Random_Phs(i,j),j=1,NumFreq)
        enddo
 
        close(14)
 
 109    INPUT_PHASE = 1
-110    CONTINUTE
+110    CONTINUE
 
       IF (INPUT_PHASE == 0)THEN
 
