@@ -10,7 +10,7 @@ RESULT_FOLDER = output/
 ! if analytical bathymetry
 DEPTH_TYPE = CELL_CENTER
 ANA_BATHY  = F
-DEPTH_FILE = wave_flume.txt
+DEPTH_FILE = depth.txt
 ! -----------------HOT START----------------------------------
 HOTSTART = T
 U_HotStart_File = u_init.ini
