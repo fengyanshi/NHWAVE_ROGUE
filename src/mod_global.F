@@ -284,6 +284,9 @@
                           W_HotStart_File,P_HotStart_File,&
                           Rho_HotStart_File,TKE_HotStart_File,&
                           EPS_HotStart_File
+     LOGICAL :: HotStartEta,HotStartU,HotStartV,HotStartW,HotStartP
+               
+
 # if defined (SALINITY)
      CHARACTER(LEN=80) :: Sali_HotStart_File,Temp_HotStart_File
 # endif

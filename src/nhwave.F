@@ -5286,6 +5286,11 @@
 # if defined (PARALLEL)
      if(n_west.eq.MPI_PROC_NULL.or.n_east.eq.MPI_PROC_NULL) then
 # endif
+
+     IF(TID_LOW_PASS)THEN
+       CALL VELOCITY_LEFT_RIGHT
+     ENDIF
+
      if(WaveMaker(1:7)=='FLUX_LR') then
        call flux_left_right_boundary
      endif
@@ -6563,6 +6568,7 @@
        enddo
      endif
     ENDIF  ! end absorbing-generating boundary
+
 !# if defined (PARALLEL)
 !     endif
 !# endif
@@ -11183,7 +11189,7 @@ END SUBROUTINE READ_3D_MASK
 # endif
 
 SUBROUTINE hot_start
-      use global
+     use global
      implicit none
      integer :: i,j,k,Iglob,Jglob
      character(LEN=80) :: file=''
@@ -11192,27 +11198,49 @@ SUBROUTINE hot_start
      REAL(SP) :: TIME0
      REAL(SP) :: Cmiu =0.09 ! note: not sure if it can be changed
 
-     open(5,file='time0.dat')
-     read(5,*)TIME0,Icount
-     close(5)
+!     open(5,file='time0.dat')
+!     read(5,*)TIME0,Icount
+!     close(5)
 
-     TIME=TIME0
+!     TIME=TIME0
 
+     TIME=0.0
+     Icount=0
+
+    IF(HotStartEta)THEN
      file=TRIM(Eta_HotStart_File)
      call read_2d(Eta,file)
+    ELSE
+     Eta = 0.0
+    ENDIF
      
+    IF(HotStartU)THEN
      file=TRIM(U_HotStart_File)
      call read_3d(u,file)
+    ELSE
+     U = 0.0
+    ENDIF    
 
+    IF(HotStartV)THEN
      file=TRIM(V_HotStart_File)
      call read_3d(v,file)
+     ELSE
+     V = 0.0
+    ENDIF
 
+    IF(HotStartW)THEN
      file=TRIM(W_HotStart_File)
      call read_3d(w,file)
+     ELSE
+     W = 0.0
+    ENDIF
 
+    IF(HotStartP)THEN
      file=TRIM(P_HotStart_File)
      call read_3d(p,file)
-
+    ELSE
+     P = 0.0
+    ENDIF
 
     IF(VISCOUS_FLOW)THEN
 !     file=TRIM(Rho_HotStart_File)
@@ -11424,3 +11452,112 @@ SUBROUTINE read_3d(phi,filename)
 
      DEALLOCATE (TMP_READ)
 END SUBROUTINE read_3d
+
+SUBROUTINE VELOCITY_LEFT_RIGHT
+!-----------------------------------------------------
+!    This subroutine is used to specify left boundary
+!    Called by
+!       update_wave_bc
+!    Last update: 06/08/2017, Fengyan Shi
+!-----------------------------------------------------
+# if defined(SALINITY)
+     use global, only: SP,pi,Zero,Ibeg,TIME,Nloc,Kloc, &
+                       Ein_X0,Din_X0,Uin_X0,Vin_X0,Win_X0,Hfx,Jbeg,Jend,Kbeg,Kend, &
+                       Ein_Xn,Din_Xn,Uin_Xn,Vin_Xn,Win_Xn,Iend1,Eta,D,Iend,Hc,MASK,&
+                       icount_tide, NumTimeData, &
+                       DataU_L,DataEta_L,DataU_R,DataEta_R,TimeData,&
+                       Sin_X0,Sin_Xn,DataSal_L,DataSal_R, &
+                       Z_pct_West,Z_pct_EAST,Nghost
+# else
+     use global, only: SP,pi,Zero,Ibeg,TIME,Nloc,Kloc, &
+                       Ein_X0,Din_X0,Uin_X0,Vin_X0,Win_X0,Hfx,Jbeg,Jend,Kbeg,Kend, &
+                       Ein_Xn,Din_Xn,Uin_Xn,Vin_Xn,Win_Xn,Iend1,Eta,D,Iend,Hc,MASK,&
+                       icount_tide, NumTimeData, &
+                       DataU_L,DataEta_L,DataU_R,DataEta_R,TimeData, &
+                       Z_pct_West,Z_pct_EAST,Nghost
+# endif
+ 
+     implicit none
+     integer  :: j,k,Iter
+     real(SP) :: Segma,Celerity,Wave_Length,Wave_Number,Fk,Fkdif,Zlev,Stokes_Drift,Fact,Phs_Lag(Nloc)
+     REAL(SP) :: TMP1,TMP2
+     REAL(SP) :: Ztmp1,Ztmp2,Utmp1,Utmp2
+
+# if defined(SALINITY)
+     REAL(SP) ::Stmp1,Stmp2
+# endif
+
+! process time series
+      IF(TIME>TimeData(icount_tide).AND.icount_tide<NumTimeData)THEN
+       icount_tide=icount_tide+1
+      ENDIF
+     IF(icount_tide>1)THEN  ! tide start
+       IF(TIME>TimeData(icount_tide))THEN
+        tmp2=ZERO
+       ELSE
+        tmp2=(TimeData(icount_tide)-TIME) &
+           /(TimeData(icount_tide)-TimeData(icount_tide-1))
+       ENDIF
+
+       Ztmp1= DataEta_L(icount_tide)*(1.0_SP-tmp2)   &
+             +DataEta_L(icount_tide-1)*tmp2
+       Ztmp2= DataEta_R(icount_tide)*(1.0_SP-tmp2)   &
+             +DataEta_R(icount_tide-1)*tmp2
+
+       Utmp1= DataU_L(icount_tide)*(1.0_SP-tmp2)   &
+             +DataU_L(icount_tide-1)*tmp2
+       Utmp2= DataU_R(icount_tide)*(1.0_SP-tmp2)   &
+             +DataU_R(icount_tide-1)*tmp2
+# if defined(SALINITY)
+       Stmp1= DataSal_L(icount_tide)*(1.0_SP-tmp2)   &
+             +DataSal_L(icount_tide-1)*tmp2
+       Stmp2= DataSal_R(icount_tide)*(1.0_SP-tmp2)   &
+             +DataSal_R(icount_tide-1)*tmp2
+# endif
+     ELSE
+
+        Ztmp1=0.0
+        Ztmp2=0.0
+        Utmp1=0.0
+        Utmp2=0.0
+
+# if defined(SALINITY)
+        Stmp1=DataSal_L(1)
+        Stmp2=DataSal_R(1)
+# endif
+
+     ENDIF  ! end tide start
+
+
+     do j = 1,Nloc
+       Ein_X0(j) = Ztmp1
+       Din_X0(j) = Ein_X0(j)+Hfx(Ibeg,j)   
+       Ein_Xn(j) = Ztmp2
+       Din_Xn(j) = Ein_Xn(j)+Hfx(Iend1,j)  
+     enddo
+
+     do k = Kbeg,Kend
+     do j = Jbeg,Jend
+       Uin_X0(j,k)=Utmp1*MASK(Ibeg,J)*Z_pct_West(K-Nghost)
+       Win_X0(j,k) = 0.0
+       Vin_X0(j,k) = 0.0
+       Uin_Xn(j,k)= Utmp2*MASK(Iend,J)*Z_pct_East(K-Nghost)
+       Win_Xn(j,k) = 0.0
+       Vin_Xn(j,k) = 0.0
+     enddo
+     enddo  
+
+! force elevation at left and right boundaries
+! to avoid over-shooting 
+     do j = 1,Nloc
+       IF(MASK(Ibeg,J)==1)THEN
+         Eta(Ibeg,j) = Ein_X0(j)
+         D(Ibeg,j) = Eta(Ibeg,j)+Hc(Ibeg,j)
+       ENDIF
+       IF(MASK(Iend,J)==1)THEN
+         Eta(Iend,j) = Ein_Xn(j)
+         D(Iend,j) = Eta(Iend,j)+Hc(Iend,j)
+       ENDIF
+     enddo
+
+END SUBROUTINE VELOCITY_LEFT_RIGHT

@@ -291,10 +291,35 @@ SUBROUTINE READ_INPUT
 
      IF(HOTSTART)THEN
        CALL GET_STRING_VAL(Eta_HotStart_File,FILE_NAME,'Eta_HotStart_File',line,ierr)
+         IF(ierr==1)THEN
+           HotStartEta = .FALSE.
+         ELSE
+           HotStartEta = .TRUE.
+         ENDIF
        CALL GET_STRING_VAL(U_HotStart_File,FILE_NAME,'U_HotStart_File',line,ierr)
+         IF(ierr==1)THEN
+           HotStartU = .FALSE.
+         ELSE
+           HotStartU = .TRUE.
+         ENDIF
        CALL GET_STRING_VAL(V_HotStart_File,FILE_NAME,'V_HotStart_File',line,ierr)
+         IF(ierr==1)THEN
+           HotStartV = .FALSE.
+         ELSE
+           HotStartV = .TRUE.
+         ENDIF
        CALL GET_STRING_VAL(W_HotStart_File,FILE_NAME,'W_HotStart_File',line,ierr)
+         IF(ierr==1)THEN
+           HotStartW = .FALSE.
+         ELSE
+           HotStartW = .TRUE.
+         ENDIF
        CALL GET_STRING_VAL(P_HotStart_File,FILE_NAME,'P_HotStart_File',line,ierr)
+         IF(ierr==1)THEN
+           HotStartP = .FALSE.
+         ELSE
+           HotStartP = .TRUE.
+         ENDIF
 # if defined (SALINITY)
        CALL GET_STRING_VAL(Sali_HotStart_File,FILE_NAME,'Sali_HotStart_File',line,ierr)
        CALL GET_STRING_VAL(Temp_HotStart_File,FILE_NAME,'Temp_HotStart_File',line,ierr)
