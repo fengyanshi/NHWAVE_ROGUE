@@ -230,6 +230,15 @@
 # if defined (SALINITY)
     IF(INI_SALI_INPUT(1:4)=='CONS')THEN
      Sali = INI_SALI
+
+     DO K=1,Kloc
+     DO J=1,Nloc
+     DO I=1,Mloc
+       DSali(I,J,K)=Hc(I,J)*Sali(I,J,K)
+     ENDDO
+     ENDDO
+     ENDDO
+
     ELSE IF(INI_SALI_INPUT(1:4)=='DATA')THEN
      call read_3d(Sali,TRIM(INI_SALI_FILE))
 
