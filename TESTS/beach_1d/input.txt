@@ -217,7 +217,7 @@ Sponge_South_Width = 0.0
 Sponge_North_Width = 0.0
 R_Sponge = 0.90
 A_Sponge = 5.0
-TID_LOW_PASS = T
+TID_LOW_PASS = F
 
 ! ------------------WAVE AVERAGE CONTROL--------------------------
 WAVE_AVERAGE_ON = F

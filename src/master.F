@@ -160,6 +160,10 @@ SUBROUTINE SINGLE_GRID_LOOP
      do while (TIME<TOTAL_TIME.and.RUN_STEP<SIM_STEPS)
 
 
+# if defined (DEBUG)
+print*,'enter single_grid_loop OK'
+# endif
+
 # if defined (COUPLING)
 ! fyshi added coupling(with a large domain model) 
 ! condition option 05/15/2013
@@ -173,6 +177,10 @@ SUBROUTINE SINGLE_GRID_LOOP
        ! time step     
        call estimate_dt
 
+# if defined (DEBUG)
+print*,'estimate_dt OK'
+# endif
+
 # if defined (LANDSLIDE)
        ! run landslide-generated tsunami
        if(trim(SlideType)=='RIGID') then
@@ -183,11 +191,23 @@ SUBROUTINE SINGLE_GRID_LOOP
        ! update boundary conditions       
        call update_wave_bc
 
+# if defined (DEBUG)
+print*,'in single loop, update_wave_bc OK'
+# endif
+
        ! update mask
        call update_mask
 
+# if defined (DEBUG)
+print*,'in single loop, update_mask OK'
+# endif
+
        ! update vars
        call update_vars
+
+# if defined (DEBUG)
+print*,'in single loop, update_vars OK'
+# endif
 
        ! SSP Runge-Kutta time stepping
        do Istage = 1,It_Order
@@ -195,16 +215,32 @@ SUBROUTINE SINGLE_GRID_LOOP
          ! well-balanced source terms
          call source_terms
 
+# if defined (DEBUG)
+print*,'in single loop, source_terms OK'
+# endif
+
          ! fluxes at cell faces
          call fluxes(1)
 
+# if defined (DEBUG)
+print*,'in single loop, fluxes(1) OK'
+# endif
+
          ! update all variables
          call eval_duvw(Istage,1)
+
+# if defined (DEBUG)
+print*,'in single loop, eval_duvw OK'
+# endif
 
          ! sponge layer
          if(SPONGE_ON) then
            call sponge_damping
          endif
+
+# if defined (DEBUG)
+print*,'in single loop, sponge_damping OK'
+# endif
 
          ! turbulence model
          if(VISCOUS_FLOW) call eval_turb(Istage,1)
