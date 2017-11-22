@@ -33,8 +33,8 @@ SCREEN_INTV = 1.0
 
 ! ------------------------GRID----------------------------------
 ! grid sizes
-DX = 0.5
-DY = 0.5
+DX = 0.25
+DY = 0.25
 
 ! ---------------------VERTICAL GRID OPTION--------------------
 ! IVGRD = 1: uniform; 2: exponential (not avaiable)
@@ -88,7 +88,7 @@ VISCOUS_NUMBER = 0.1666667
 
 ! ----------------------WET-DRY-----------------------------------------
 ! minimum depth for wetting-drying
-MinDep = 0.01
+MinDep = 0.05
 
 ! ---------------------POISSON SOLVER-----------------------------------
 ! isolver is an option for different preconditioner.
@@ -184,8 +184,8 @@ THETA = 30.0
 
 ! ----------------------INTERNAL WAVEMAKER--------------------------------
 ! parameters for internal wavemaker
-Xsource_West = 50.0
-Xsource_East = 53.0
+Xsource_West = 15.0
+Xsource_East = 16.0
 Ysource_Suth = 0.0
 Ysource_Nrth = 1000000.0
 
@@ -211,7 +211,7 @@ Ysource_Nrth = 1000000.0
 !       mild: R=0.90, A=5.0
 !       very mild: R=0.95, A=5.0
 SPONGE_ON = T
-Sponge_West_Width =  20.0
+Sponge_West_Width =  13.0
 Sponge_East_Width =  0.0
 Sponge_South_Width = 0.0
 Sponge_North_Width = 0.0
